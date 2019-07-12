@@ -3,6 +3,7 @@
  * Author: Sami Väisänen
  * Date: 13.2.2019 
  */
+using ExpertSystem.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,10 @@ namespace ExpertSystem
         #region PROPERTIES
 
         // Property for rules
-        public RuleWorld Rules { get; set; }
+        RuleWorld Rules { get; set; }
 
         // Property for storing selected header
-        public int CurrentHeaderId { get; set; }
+        public Guid CurrentHeaderId { get; set; }
 
         #endregion
 
@@ -32,7 +33,10 @@ namespace ExpertSystem
         public FrmEditor()
         {
             InitializeComponent();
-            CurrentHeaderId = -1;
+            CurrentHeaderId = Guid.Empty;
+
+            // No rules, create instance of rules
+            Rules = new RuleWorld();
         }
 
         #endregion
@@ -56,7 +60,7 @@ namespace ExpertSystem
 
         #endregion
 
-        #region BUTTON EVENTS
+        #region HEADER EVENTS
 
         /// <summary>
         /// Leaving header creates new header if none yet available
@@ -66,16 +70,14 @@ namespace ExpertSystem
         private void TbHeader_Leave(object sender, EventArgs e)
         {
             // Check if rules are initialized
-            if (Rules == null)
+            if (Rules.Headers.Count == 0)
             {
-                // No rules, create instance of rules and add first rule´s header
-                Rules = new RuleWorld();
-                CurrentHeaderId = Rules.AddHeader(tbHeader.Text);
+                CurrentHeaderId = Rules.Headers.Add(tbHeader.Text);
             }
             else
             {
                 // Rule exists, If leave, update text
-                Rules.UpdateHeader(CurrentHeaderId, tbHeader.Text);
+                Rules.Headers.Update(CurrentHeaderId, tbHeader.Text);
             }
         }
 
@@ -86,35 +88,35 @@ namespace ExpertSystem
         /// <param name="e"></param>
         private void BtnToParent_Click(object sender, EventArgs e)
         {
-            int tmpCurHdr = 0;
-
-            if (Rules == null)
-            {
-                MessageBox.Show("Ylempää tasoa ei ole.");
-                return;
-            }
+            Guid tmpCurHdr = Guid.Empty;
 
             try
             {
                 // Get header by subheader id
-                tmpCurHdr = (from RuleWorld.Choice chc in Rules.Choices
-                             where chc.SubHeaderId == CurrentHeaderId
-                             select chc.ParentHeaderId).FirstOrDefault();
+                tmpCurHdr = Rules.Choices.GetParentHeader(CurrentHeaderId);
 
+                if (tmpCurHdr != Guid.Empty)
+                {
+                    // Header for parent rule found, set it as current header
+                    CurrentHeaderId = tmpCurHdr;
+                    UpDateView(true, true, true);
+                }
+                else
+                {
+                    MessageBox.Show("Ylempää tasoa ei ole.");
+                    return;
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // An exception occurred -> throw exception further
-                throw ex;                
-            }
-
-            if (tmpCurHdr > 0)
-            {
-                // Header for parent rule found, set it as current header
-                CurrentHeaderId = tmpCurHdr;
-                UpDateView(true, true, true);
+                MessageBox.Show("Ylempää tasoa ei ole tai tuli virhe.");
+                return;
             }
         }
+
+        #endregion
+
+        #region CHOICE EVENTS
 
         /// <summary>
         /// Add new choice event
@@ -123,18 +125,31 @@ namespace ExpertSystem
         /// <param name="e"></param>
         private void BtnAddChoice_Click(object sender, EventArgs e)
         {
+            if (CurrentHeaderId == null || CurrentHeaderId == Guid.Empty)
+            {
+                MessageBox.Show("Syötä ensin otsikko/kysymys!");
+                return;
+            }
+
             // Get user response
             string response = DialogHelper.InputBox("Anna vastausvaihtoehto:");
 
             // Validate response
             if (response != null && response != "")
             {
-                // Add choice to data
-                int addedId = Rules.AddChoice(CurrentHeaderId, response);
-                // Update listview
-                PopulateChoices();
-                // Update screen contents
-                UpDateView(false, true, true);
+                try
+                {
+                    // Add choice to data
+                    Guid addedId = Rules.Choices.Add(CurrentHeaderId, response);
+                    // Update listview
+                    PopulateChoices();
+                    // Update screen contents
+                    UpDateView(false, true, true);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 
@@ -150,30 +165,47 @@ namespace ExpertSystem
                 string newText = DialogHelper.InputBox("Muokkaa vaihtoehtoa:", lvChoices.SelectedItems[0].Text);
                 if (newText != null && newText != "")
                 {
-                    int choiceId = ((RuleWorld.Choice)lvChoices.SelectedItems[0].Tag).Id;
-                    Rules.UpdateChoice(choiceId, newText);
+                    Guid choiceId = ((Choice)lvChoices.SelectedItems[0].Tag).ID;
+                    Rules.Choices.UpdateChoice(choiceId, newText);
                     PopulateChoices();
                     UpDateView(false, true, true);
                 }
             }
+            else
+            {
+                MessageBox.Show("Muokattavaa vaihtoehtoa ei ole valittu!");
+            }
         }
 
         /// <summary>
-        /// Delete selected choice
+        /// Delete choice
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BtnDeleteChoice_Click(object sender, EventArgs e)
+        private void BtnDeleteChoice_Click_1(object sender, EventArgs e)
         {
-            // Get choice from listview´s tag
-            RuleWorld.Choice selectedChc = (RuleWorld.Choice)lvChoices.SelectedItems[0].Tag;
+            Choice selectedChoice = null;
 
-            // Remove selected choice 
-            Rules.DeleteChoice(selectedChc);
+            // Check selectedItem
+            if (lvChoices.SelectedItems != null && lvChoices.SelectedItems.Count > 0)
+            {
+                selectedChoice = (Choice)lvChoices.SelectedItems[0].Tag;
 
-            // RePopulate choices and refresh controls
-            PopulateChoices();
-            UpDateView(false, true, true);
+                // Remove tag from list
+                Rules.Choices.Remove(selectedChoice);
+
+                /// Remove from list
+                lvChoices.Items.Remove(lvChoices.SelectedItems[0]);
+
+                /// Populate / refresh
+                PopulateChoices();
+            }
+            else
+            {
+                // Nothing selected
+                MessageBox.Show("Ei poistettavaa tai poistettavaa ei ole valittu.");
+            }
+
         }
 
         /// <summary>
@@ -186,28 +218,37 @@ namespace ExpertSystem
             if (lvChoices.SelectedIndices.Count > 0)
             {
                 // Get tag of the selected choice
-                RuleWorld.Choice SelectedChoice = (RuleWorld.Choice)lvChoices.SelectedItems[0].Tag;
+                Choice SelectedChoice = (Choice)lvChoices.SelectedItems[0].Tag;
 
                 // Check if subheader is given
-                if (SelectedChoice.SubHeaderId > CurrentHeaderId)
+                if (SelectedChoice.SubHeaderID != Guid.Empty)
                 {
                     // Open sub without creating it
-                    CurrentHeaderId = SelectedChoice.SubHeaderId;
+                    CurrentHeaderId = SelectedChoice.SubHeaderID;
                 }
                 else
                 {
                     // Subheader is not created, crete new and open it to UI
-                    SelectedChoice.ParentHeaderId = CurrentHeaderId;
-                    CurrentHeaderId = Rules.AddHeader("");
-                    SelectedChoice.SubHeaderId = CurrentHeaderId;
+                    SelectedChoice.ParentReference = CurrentHeaderId;
+                    CurrentHeaderId = Rules.Headers.Add("");
+                    SelectedChoice.SubHeaderID = CurrentHeaderId;
                 }
                 // Repopulate UI
                 UpDateView(true, true, true);
+            }
+            else
+            {
+                MessageBox.Show("Vaihtoehtoa ei ole valittu!");
+                return;
             }
 
             // Set focus
             tbHeader.Select();
         }
+
+        #endregion
+
+        #region CONCLUSION
 
         /// <summary>
         /// Andd conclusion event
@@ -216,13 +257,20 @@ namespace ExpertSystem
         /// <param name="e"></param>
         private void BtnAddConclusion_Click(object sender, EventArgs e)
         {
+            if (lvChoices.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Vaihtoehtoa ei ole valittu!");
+                return;
+            }
+
             // Ask conclusion text from user
             string response = DialogHelper.InputBox("Anna ratkaisuvaihtoehto:");
 
             if (response != null && response != "")
             {
                 // Null-check passed, add new conclusion and repopulate screen
-                int addedId = Rules.AddConclusion(((RuleWorld.Choice)lvChoices.SelectedItems[0].Tag).Id, response);
+                Conclusion cncToAdd = new Conclusion(Guid.NewGuid(), ((Choice)(lvChoices.SelectedItems[0].Tag)).ID, response);
+                Guid addedId = Rules.Conclusions.Add(cncToAdd);
                 PopulateConclusions();
                 UpDateView(false, true, true);
             }
@@ -235,38 +283,21 @@ namespace ExpertSystem
         /// <param name="e"></param>
         private void BtnDeleteConclusion_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("BTNDELETECONCLUSION IS NOT IMPLEMENTED");
+            if (lvConclusions.SelectedItems.Count > 0)
+            {
+                try
+                {
+                    Conclusion ConclusionToRemove = (Conclusion)lvConclusions.SelectedItems[0].Tag;
+                    Rules.Conclusions.Remove(ConclusionToRemove);
+                }
+                catch (Exception)
+                {
+                    // Do not break anything - just leave as is - to be implemented later...
+                }
+            }
         }
 
-        /// <summary>
-        /// Delete choice
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnDeleteChoice_Click_1(object sender, EventArgs e)
-        {
-            RuleWorld.Choice selectedChoice = null;
 
-            // Check selectedItem
-            if (lvChoices.SelectedItems != null)
-            {
-                selectedChoice = (RuleWorld.Choice)lvChoices.SelectedItems[0].Tag;
-
-                // Remove tag from list
-                Rules.DeleteChoice(selectedChoice);
-
-                /// Remove from list
-                lvChoices.Items.Remove(lvChoices.SelectedItems[0]);
-
-                /// Populate / refresh
-                PopulateChoices();
-            }
-            else
-            {
-                // Nothing selected
-            }
-
-        }
 
         #endregion
 
@@ -332,7 +363,7 @@ namespace ExpertSystem
         public void UpDateView(bool hdr, bool chc, bool cnc)
         {
             // Set text for current header
-            tbHeader.Text = (from q in Rules.Headers where q.Id == CurrentHeaderId select q.Text).FirstOrDefault();
+            tbHeader.Text = (from q in Rules.Headers.HeaderList where q.ID == CurrentHeaderId select q.TextValue).FirstOrDefault();
 
             // Fill choices
             PopulateChoices();
@@ -348,15 +379,15 @@ namespace ExpertSystem
         {
             // Clear list and fill it with choices by current header
             lvChoices.Items.Clear();
-            List<RuleWorld.Choice> lviChoices = (from chc in Rules.Choices where chc.ParentHeaderId == CurrentHeaderId select chc).ToList();
+            List<Choice> listedChoices = Rules.Choices.GetChoicesByParentReference(CurrentHeaderId);
 
             // Loop choices
-            foreach (RuleWorld.Choice chc in lviChoices)
+            foreach (Choice chc in listedChoices)
             {
                 // Declare new listviewitem
                 ListViewItem lvi = new ListViewItem()
                 {
-                    Text = chc.Text,
+                    Text = chc.TextValue,
                     Tag = chc
                 };
 
@@ -370,48 +401,37 @@ namespace ExpertSystem
         /// </summary>
         private void PopulateConclusions()
         {
-            // Clear selections
-            int selectedChoiceId = -1;
-            try
-            {
-                // Get first to check existance of conclusions for selected header
-                selectedChoiceId = (from chc in Rules.Choices where chc.ParentHeaderId == CurrentHeaderId select chc).FirstOrDefault().Id;
-            }
-            catch (Exception)
-            {
-            }
+            //try
+            //{
+            //    if (lvChoices.SelectedIndices.Count > 0)
+            //    {
+            //        int firstChcID = ((Choice)lvChoices.SelectedItems[0].Tag).ID;
 
-            if (selectedChoiceId >= 0)
-            {
-                // Conclusions available
+            //        // Clear control 
+            //        lvConclusions.Items.Clear();
 
-                try
-                {
-                    // Clear control for conclusions
-                    lvConclusions.Items.Clear();
+            //        // Request list of conclusions for listview
+            //        List<Conclusion> lstConclusions = (from conc in Rules.Conclusions.ConclusionList where conc.ParentReference == firstChcID select conc).ToList();
 
-                    // Request list of conclusions for listview
-                    List<RuleWorld.Conclusion> lstConclusions = (from conc in Rules.Conclusions where conc.ChoiceId == selectedChoiceId select conc).ToList();
+            //        // Loop conclusions to create listviewitems
+            //        foreach (Conclusion conc in lstConclusions)
+            //        {
+            //            // Declare new lvi
+            //            ListViewItem lvi = new ListViewItem()
+            //            {
+            //                // Set contents and reference
+            //                Text = conc.TextValue,
+            //                Tag = conc
+            //            };
 
-                    // Loop conclusions to create listviewitems
-                    foreach (RuleWorld.Conclusion conc in lstConclusions)
-                    {
-                        // Declare new lvi
-                        ListViewItem lvi = new ListViewItem()
-                        {
-                            // Set contents and reference
-                            Text = conc.Text,
-                            Tag = conc
-                        };
-
-                        // Add lvi to listview
-                        lvConclusions.Items.Add(lvi);
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
+            //            // Add lvi to listview
+            //            lvConclusions.Items.Add(lvi);
+            //        }
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //}
         }
 
         #endregion

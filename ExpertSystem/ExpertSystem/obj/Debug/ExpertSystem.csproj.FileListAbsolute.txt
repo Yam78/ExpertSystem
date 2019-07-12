@@ -1,0 +1,10 @@
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\bin\Debug\ExpertSystem.exe.config
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\bin\Debug\ExpertSystem.exe
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\bin\Debug\ExpertSystem.pdb
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.FrmEditor.resources
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.FrmInput.resources
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.Properties.Resources.resources
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.csproj.GenerateResource.cache
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.csproj.CoreCompileInputs.cache
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.exe
+C:\Users\Sanx\source\repos\ExpertSystem\ExpertSystem\obj\Debug\ExpertSystem.pdb

@@ -4,7 +4,7 @@
  * Author: Sami Väisänen
  * Date: 13.2.2019
  */
-  
+
 using System;
 using System.Windows.Forms;
 
@@ -35,11 +35,11 @@ namespace ExpertSystem
         /// </summary>
         /// <param name="header">Header of the box</param>
         /// <param name="showInput">True = Show inputbox, False = hide it</param>
-        /// <param name="leftButtonText">Text for left button</param>
+        /// <param name="leftButtonText">TextValue for left button</param>
         /// <param name="leftResult">Returnvalue for left button as dialogresult</param>
         /// <param name="midButtonText">Middlebutton text</param>
         /// <param name="midResult">Middlebutton result as dialogresult</param>
-        /// <param name="rightButtonText">Text for rightmost button</param>
+        /// <param name="rightButtonText">TextValue for rightmost button</param>
         /// <param name="rightResult">Returnvalue for rigthmost button</param>
         public FrmInput(String header, bool showInput,
             string leftButtonText, DialogResult leftResult,
@@ -69,11 +69,11 @@ namespace ExpertSystem
         /// </summary>
         /// <param name="header">Header of the box</param>
         /// <param name="showInput">True = Show inputbox, False = hide it</param>
-        /// <param name="leftButtonText">Text for left button</param>
+        /// <param name="leftButtonText">TextValue for left button</param>
         /// <param name="leftResult">Returnvalue for left button as dialogresult</param>
         /// <param name="midButtonText">Middlebutton text</param>
         /// <param name="midResult">Middlebutton result as dialogresult</param>
-        /// <param name="rightButtonText">Text for rightmost button</param>
+        /// <param name="rightButtonText">TextValue for rightmost button</param>
         /// <param name="rightResult">Returnvalue for rigthmost button</param>
         /// <param name="defaultValue">Default value to return as string</param>
         public FrmInput(String header, bool showInput,
@@ -118,7 +118,7 @@ namespace ExpertSystem
         }
 
         #endregion
-        
+
         #region BUTTON EVENTS
 
         /// <summary>
@@ -177,12 +177,12 @@ namespace ExpertSystem
         {
             if (text == null || text == "")
             {
-                // Text for button is not given, hide button
+                // TextValue for button is not given, hide button
                 btn.Visible = false;
             }
             else
             {
-                // Text is given, set text
+                // TextValue is given, set text
                 btn.Text = text;
             }
         }

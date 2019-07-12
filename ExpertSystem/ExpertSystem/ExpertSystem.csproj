@@ -63,14 +63,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DialogHelper.cs" />
+    <Compile Include="Classes\Choice.cs" />
+    <Compile Include="Classes\ChoiceCollection.cs" />
+    <Compile Include="Classes\Conclusion.cs" />
+    <Compile Include="Classes\ConclusionCollection.cs" />
+    <Compile Include="Classes\Header.cs" />
+    <Compile Include="Classes\HeaderCollection.cs" />
+    <Compile Include="Interfaces\IRulePartCollection.cs" />
+    <Compile Include="Interfaces\IRulePart.cs" />
+    <Compile Include="Helpers\DialogHelper.cs" />
     <Compile Include="FrmInput.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrmInput.Designer.cs">
       <DependentUpon>FrmInput.cs</DependentUpon>
     </Compile>
-    <Compile Include="RuleWorld.cs" />
+    <Compile Include="Classes\RuleWorld.cs" />
     <Compile Include="FrmEditor.cs">
       <SubType>Form</SubType>
     </Compile>

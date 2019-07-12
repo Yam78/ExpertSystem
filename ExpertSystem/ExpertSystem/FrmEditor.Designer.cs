@@ -54,7 +54,7 @@
             // 
             // lvChoices
             // 
-            this.lvChoices.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lvChoices.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lvChoices.AutoArrange = false;
             this.lvChoices.FullRowSelect = true;
@@ -71,7 +71,7 @@
             // 
             // tbHeader
             // 
-            this.tbHeader.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tbHeader.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbHeader.Location = new System.Drawing.Point(12, 68);
             this.tbHeader.Multiline = true;
@@ -147,7 +147,7 @@
             // 
             // lvConclusions
             // 
-            this.lvConclusions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lvConclusions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lvConclusions.FullRowSelect = true;
             this.lvConclusions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
@@ -320,4 +320,3 @@
         private System.Windows.Forms.ToolStripMenuItem MITreeView;
     }
 }
-
