@@ -24,6 +24,7 @@ namespace ExpertSystem.Classes
 
         #endregion
 
+        #region CONSTRUCTORS
 
         /// <summary>
         /// Default constructor
@@ -44,6 +45,8 @@ namespace ExpertSystem.Classes
             this.ParentReference = hdrId;
             this.TextValue = choiceText;
         }
+
+        #endregion
 
         #region METHODS / OVERRIDES
 

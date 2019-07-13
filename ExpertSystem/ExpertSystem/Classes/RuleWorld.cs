@@ -34,7 +34,7 @@ namespace ExpertSystem.Classes
             // HeaderCollection, choices to make and 
             Headers = new HeaderCollection();
             Choices = new ChoiceCollection();
-            //Conclusions = new ConclusionCollection();
+            Conclusions = new ConclusionCollection();
         }
 
         #endregion

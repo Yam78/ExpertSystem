@@ -166,11 +166,6 @@ namespace ExpertSystem.Classes
         }
 
 
-        public bool Remove<T>(T item)
-        {
-            throw new NotImplementedException();
-        }
-
 
     }
 }

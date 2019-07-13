@@ -41,8 +41,7 @@ namespace ExpertSystem.Classes
             this.ParentReference = chcId;
             this.TextValue = conclusionText;
         }
-
-
+        
         #endregion
 
         #region METHODS / OVERRIDES

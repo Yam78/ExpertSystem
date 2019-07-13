@@ -401,37 +401,37 @@ namespace ExpertSystem
         /// </summary>
         private void PopulateConclusions()
         {
-            //try
-            //{
-            //    if (lvChoices.SelectedIndices.Count > 0)
-            //    {
-            //        int firstChcID = ((Choice)lvChoices.SelectedItems[0].Tag).ID;
+            try
+            {
+                if (lvChoices.SelectedIndices.Count > 0)
+                {
+                    Guid firstChcID = ((Choice)lvChoices.SelectedItems[0].Tag).ID;
 
-            //        // Clear control 
-            //        lvConclusions.Items.Clear();
+                    // Clear control 
+                    lvConclusions.Items.Clear();
 
-            //        // Request list of conclusions for listview
-            //        List<Conclusion> lstConclusions = (from conc in Rules.Conclusions.ConclusionList where conc.ParentReference == firstChcID select conc).ToList();
+                    // Request list of conclusions for listview
+                    List<Conclusion> lstConclusions = (from conc in Rules.Conclusions.ConclusionList where conc.ParentReference == firstChcID select conc).ToList();
 
-            //        // Loop conclusions to create listviewitems
-            //        foreach (Conclusion conc in lstConclusions)
-            //        {
-            //            // Declare new lvi
-            //            ListViewItem lvi = new ListViewItem()
-            //            {
-            //                // Set contents and reference
-            //                Text = conc.TextValue,
-            //                Tag = conc
-            //            };
+                    // Loop conclusions to create listviewitems
+                    foreach (Conclusion conc in lstConclusions)
+                    {
+                        // Declare new lvi
+                        ListViewItem lvi = new ListViewItem()
+                        {
+                            // Set contents and reference
+                            Text = conc.TextValue,
+                            Tag = conc
+                        };
 
-            //            // Add lvi to listview
-            //            lvConclusions.Items.Add(lvi);
-            //        }
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //}
+                        // Add lvi to listview
+                        lvConclusions.Items.Add(lvi);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         #endregion
